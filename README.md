@@ -2,11 +2,6 @@
 
 ### Plataforma Digital de Agendamento de Consultas em Unidades de Saúde Pública
 
-![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white)
-![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?logo=javascript&logoColor=000)
-
 O **Saúde Fácil** é uma aplicação web desenvolvida como Produto Mínimo Viável (MVP) para o Projeto Integrador do curso de Tecnologia em Análise e Desenvolvimento de Sistemas do Centro Universitário Senac.
 
 A solução tem como objetivo facilitar a busca por unidades de saúde e organizar o fluxo de agendamento de consultas por meio de uma interface simples, clara e acessível.
