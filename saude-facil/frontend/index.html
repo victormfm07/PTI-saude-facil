@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saúde Fácil – Entrar</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="logo-topo">
+  <div class="icone">🏥</div>
+  <h1>Saúde Fácil</h1>
+  <p>Acesso à saúde pública simplificado</p>
+</div>
+<main class="auth-main">
+  <div class="card">
+    <h2>Entrar na sua conta</h2>
+    <div id="msg"></div>
+    <label for="email">E-mail</label>
+    <input type="email" id="email" placeholder="seu@email.com" value="maria@email.com">
+    <label for="senha">Senha</label>
+    <input type="password" id="senha" placeholder="••••••" value="123456">
+    <button onclick="fazerLogin()">Entrar</button>
+    <button class="texto" onclick="window.location.href='cadastro.html'">Criar conta gratuita</button>
+    <p class="muted" style="margin-top:14px">Use o acesso de teste já preenchido ou cadastre uma conta nova.</p>
+  </div>
+</main>
+<script src="js/api.js"></script>
+<script>
+async function fazerLogin() {
+  const email = document.getElementById('email').value.trim();
+  const senha = document.getElementById('senha').value.trim();
+  const msg = document.getElementById('msg');
+  msg.innerHTML = '';
+  if (!email || !senha) {
+    msg.innerHTML = '<div class="erro">Preencha e-mail e senha.</div>';
+    return;
+  }
+  try {
+    const usuario = await Api.login(email, senha);
+    sessionStorage.setItem('usuario', JSON.stringify(usuario));
+    window.location.href = 'home.html';
+  } catch (e) {
+    msg.innerHTML = `<div class="erro">${e.message}</div>`;
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saúde Fácil – Agendar consulta</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topo"><h1>Agendar consulta</h1></header>
+<main>
+  <div class="passo-indicador">
+    <div class="ativo" id="ind-1"></div><div id="ind-2"></div><div id="ind-3"></div>
+  </div>
+
+  <!-- PASSO 1: escolher unidade e especialidade -->
+  <div class="card" id="passo-1">
+    <h2>1. Unidade e especialidade</h2>
+    <div id="msg-1"></div>
+    <label for="unidade">Unidade de saúde</label>
+    <select id="unidade" onchange="atualizarEspecialidades()"></select>
+    <label for="especialidade">Especialidade</label>
+    <select id="especialidade"></select>
+    <button onclick="irParaPasso(2)">Continuar</button>
+  </div>
+
+  <!-- PASSO 2: data e horário -->
+  <div class="card" id="passo-2" style="display:none">
+    <h2>2. Data e horário</h2>
+    <div id="msg-2"></div>
+    <label for="data">Data</label>
+    <input type="date" id="data">
+    <label for="horario">Horário</label>
+    <select id="horario">
+      <option>08:00</option><option>09:30</option><option>11:00</option><option>14:00</option><option>16:00</option>
+    </select>
+    <button onclick="irParaPasso(3)">Continuar</button>
+    <button class="texto" onclick="irParaPasso(1)">Voltar</button>
+  </div>
+
+  <!-- PASSO 3: confirmação -->
+  <div class="card" id="passo-3" style="display:none">
+    <h2>3. Confirmar agendamento</h2>
+    <div id="msg-3"></div>
+    <div id="resumo"></div>
+    <button class="secundario" onclick="confirmar()">Confirmar agendamento</button>
+    <button class="texto" onclick="irParaPasso(2)">Voltar</button>
+  </div>
+
+  <div class="card" id="passo-sucesso" style="display:none">
+    <h2>✅ Consulta agendada!</h2>
+    <p>Você pode acompanhar os detalhes no seu histórico.</p>
+    <button onclick="window.location.href='historico.html'">Ver histórico</button>
+    <button class="texto" onclick="window.location.href='home.html'">Voltar ao início</button>
+  </div>
+</main>
+<nav class="nav-inferior">
+  <a href="home.html">🏠<br>Início</a>
+  <a href="unidades.html">🔎<br>Unidades</a>
+  <a href="agendamento.html" class="ativo">📅<br>Agendar</a>
+  <a href="historico.html">🗂️<br>Histórico</a>
+</nav>
+<script src="js/api.js"></script>
+<script>
+exigirLogin();
+const usuario = usuarioLogado();
+let unidades = [];
+
+async function carregar() {
+  unidades = await Api.listarUnidades();
+  const select = document.getElementById('unidade');
+  select.innerHTML = unidades.map(u => `<option value="${u.id}">${u.nome}</option>`).join('');
+  atualizarEspecialidades();
+  document.getElementById('data').min = new Date().toISOString().slice(0, 10);
+}
+
+function atualizarEspecialidades() {
+  const unidade = unidades.find(u => u.id == document.getElementById('unidade').value);
+  const select = document.getElementById('especialidade');
+  select.innerHTML = unidade.especialidades.split(',').map(e => `<option>${e.trim()}</option>`).join('');
+}
+
+function irParaPasso(n) {
+  if (n === 2 && !document.getElementById('unidade').value) {
+    document.getElementById('msg-1').innerHTML = '<div class="erro">Selecione uma unidade.</div>';
+    return;
+  }
+  if (n === 3) {
+    const data = document.getElementById('data').value;
+    if (!data) {
+      document.getElementById('msg-2').innerHTML = '<div class="erro">Selecione uma data.</div>';
+      return;
+    }
+    montarResumo();
+  }
+  [1, 2, 3].forEach(i => {
+    document.getElementById(`passo-${i}`).style.display = i === n ? 'block' : 'none';
+    document.getElementById(`ind-${i}`).className = i <= n ? 'ativo' : '';
+  });
+}
+
+function montarResumo() {
+  const unidade = unidades.find(u => u.id == document.getElementById('unidade').value);
+  const especialidade = document.getElementById('especialidade').value;
+  const data = document.getElementById('data').value;
+  const horario = document.getElementById('horario').value;
+  document.getElementById('resumo').innerHTML = `
+    <p><strong>Unidade:</strong> ${unidade.nome}</p>
+    <p><strong>Especialidade:</strong> ${especialidade}</p>
+    <p><strong>Data:</strong> ${data}</p>
+    <p><strong>Horário:</strong> ${horario}</p>
+  `;
+}
+
+async function confirmar() {
+  try {
+    await Api.criarAgendamento({
+      usuarioId: usuario.id,
+      unidadeId: Number(document.getElementById('unidade').value),
+      especialidade: document.getElementById('especialidade').value,
+      data: document.getElementById('data').value,
+      horario: document.getElementById('horario').value,
+    });
+    [1, 2, 3].forEach(i => document.getElementById(`passo-${i}`).style.display = 'none');
+    document.getElementById('passo-sucesso').style.display = 'block';
+  } catch (e) {
+    document.getElementById('msg-3').innerHTML = `<div class="erro">${e.message}</div>`;
+  }
+}
+
+carregar();
+</script>
+</body>
+</html>

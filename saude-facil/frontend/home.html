@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saúde Fácil – Início</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topo">
+  <h1>Saúde Fácil</h1>
+  <span class="usuario-nome" id="nome-usuario"></span>
+</header>
+<main>
+  <div class="card">
+    <h2>O que você precisa hoje?</h2>
+    <button onclick="window.location.href='unidades.html'">🔎 Buscar unidade de saúde</button>
+    <button class="secundario" onclick="window.location.href='agendamento.html'">📅 Agendar consulta</button>
+    <button onclick="window.location.href='historico.html'">🗂️ Meus agendamentos</button>
+  </div>
+  <div class="card">
+    <h2>Próxima consulta</h2>
+    <div id="proxima" class="muted">Carregando...</div>
+  </div>
+</main>
+<nav class="nav-inferior">
+  <a href="home.html" class="ativo">🏠<br>Início</a>
+  <a href="unidades.html">🔎<br>Unidades</a>
+  <a href="agendamento.html">📅<br>Agendar</a>
+  <a href="historico.html">🗂️<br>Histórico</a>
+</nav>
+<script src="js/api.js"></script>
+<script>
+exigirLogin();
+const usuario = usuarioLogado();
+document.getElementById('nome-usuario').textContent = usuario.nome.split(' ')[0];
+
+(async () => {
+  const el = document.getElementById('proxima');
+  try {
+    const agendamentos = (await Api.listarAgendamentos(usuario.id)).filter(a => a.status === 'AGENDADO');
+    if (!agendamentos.length) {
+      el.textContent = 'Você não tem consultas agendadas no momento.';
+      return;
+    }
+    const a = agendamentos[0];
+    el.innerHTML = `<strong>${a.unidade_nome}</strong><br>${a.especialidade} — ${a.data_consulta} às ${a.horario_consulta}`;
+  } catch (e) {
+    el.textContent = 'Não foi possível carregar seus agendamentos agora.';
+  }
+})();
+</script>
+</body>
+</html>
