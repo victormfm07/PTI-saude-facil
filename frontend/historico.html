@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saúde Fácil – Histórico</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topo"><h1>Meus agendamentos</h1></header>
+<main>
+  <div class="card">
+    <div id="lista" class="muted">Carregando...</div>
+  </div>
+</main>
+<nav class="nav-inferior">
+  <a href="home.html">🏠<br>Início</a>
+  <a href="unidades.html">🔎<br>Unidades</a>
+  <a href="agendamento.html">📅<br>Agendar</a>
+  <a href="historico.html" class="ativo">🗂️<br>Histórico</a>
+  <a href="#" onclick="sair(); return false;">🚪<br>Sair</a>
+</nav>
+<script src="js/api.js"></script>
+<script>
+exigirLogin();
+const usuario = usuarioLogado();
+
+async function carregar() {
+  const lista = document.getElementById('lista');
+  try {
+    const agendamentos = await Api.listarAgendamentos(usuario.id);
+    if (!agendamentos.length) {
+      lista.innerHTML = '<p class="muted">Nenhum agendamento realizado ainda.</p>';
+      return;
+    }
+    const hoje = hojeLocalISO();
+    const agora = new Date();
+    const horaAgora = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
+    lista.innerHTML = agendamentos.map(a => {
+      const jaOcorreu = a.data_consulta < hoje || (a.data_consulta === hoje && a.horario_consulta < horaAgora);
+      const podeCancelar = a.status === 'AGENDADO' && !jaOcorreu;
+      return `
+      <div class="unidade-item">
+        <strong>${a.unidade_nome}</strong>
+        <span class="badge ${a.status === 'AGENDADO' ? 'agendado' : 'cancelado'}">${a.status}</span>
+        <div class="muted">${a.especialidade}</div>
+        <div class="muted">📅 ${formatarDataBR(a.data_consulta)} às ${a.horario_consulta}</div>
+        ${podeCancelar ? `<button class="perigo" onclick="cancelar(${a.id})">Cancelar</button>` : ''}
+      </div>
+    `;
+    }).join('');
+  } catch (e) {
+    lista.innerHTML = `<div class="erro">${e.message}</div>`;
+  }
+}
+
+async function cancelar(id) {
+  if (!confirm('Deseja realmente cancelar esta consulta?')) return;
+  try {
+    await Api.cancelarAgendamento(id);
+    carregar();
+  } catch (e) {
+    document.getElementById('lista').insertAdjacentHTML('afterbegin', `<div class="erro">${e.message}</div>`);
+  }
+}
+
+carregar();
+</script>
+</body>
+</html>
