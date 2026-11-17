@@ -1,82 +1,188 @@
-# Saúde Fácil – MVP
+# Saúde Fácil
 
-Aplicação web de busca de unidades de saúde e agendamento de consultas,
-desenvolvida como Produto Mínimo Viável (MVP) do Projeto Integrador.
+### Plataforma Digital de Agendamento de Consultas em Unidades de Saúde Pública
 
-## Como rodar
+![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?logo=javascript&logoColor=000)
 
-Pré-requisito: **Node.js 22 ou superior** (o pacote `better-sqlite3` exige
-Node ≥ 22 para instalar o binário pré-compilado).
+O **Saúde Fácil** é uma aplicação web desenvolvida como Produto Mínimo Viável (MVP) para o Projeto Integrador do curso de Tecnologia em Análise e Desenvolvimento de Sistemas do Centro Universitário Senac.
+
+A solução tem como objetivo facilitar a busca por unidades de saúde e organizar o fluxo de agendamento de consultas por meio de uma interface simples, clara e acessível.
+
+---
+
+## Funcionalidades
+
+O MVP permite:
+
+- Cadastro e login de usuários;
+- Busca e visualização de unidades de saúde;
+- Consulta das especialidades disponíveis;
+- Agendamento de consultas em três etapas;
+- Conferência dos dados antes da confirmação;
+- Visualização da próxima consulta;
+- Histórico de agendamentos;
+- Cancelamento de consultas;
+- Validação de datas, horários e conflitos de agenda.
+
+---
+
+## Tecnologias utilizadas
+
+| Camada | Tecnologia |
+| --- | --- |
+| Front-end | HTML5, CSS3 e JavaScript |
+| Back-end | Node.js e Express |
+| Banco de dados | SQLite |
+| Acesso ao banco | better-sqlite3 |
+| Proteção de senhas | bcryptjs |
+| Comunicação | API REST |
+
+A interface foi desenvolvida seguindo uma abordagem **mobile first**, com foco em simplicidade e facilidade de navegação.
+
+---
+
+## Como executar o projeto
+
+### Pré-requisito
+
+É necessário possuir **Node.js 22 ou superior** instalado.
+
+O pacote `better-sqlite3` utilizado no projeto requer Node.js 22 ou versão superior para utilização do binário pré-compilado.
+
+### 1. Acesse a pasta do back-end
 
 ```bash
 cd backend
+```
+
+### 2. Instale as dependências
+
+```bash
 npm install
+```
+
+### 3. Inicie a aplicação
+
+```bash
 npm start
 ```
 
-Acesse http://localhost:8080 no navegador.
+### 4. Abra o sistema no navegador
 
-Login de teste já pré-preenchido na tela inicial:
-- E-mail: maria@email.com
-- Senha: 123456
-
-## Stack
-
-- **Front-end:** HTML5, CSS3 e JavaScript puro (mobile first)
-- **Back-end:** Node.js + Express
-- **Banco de dados:** SQLite (better-sqlite3)
-- **Senhas:** armazenadas com hash (bcryptjs), nunca em texto puro
-
-## Estrutura
-
+```text
+http://localhost:8080
 ```
-saude-facil/
-  backend/
-    src/
-      database.js      -> schema e seed do banco
-      repositories.js   -> acesso a dados (SQL)
-      services.js       -> regras de negócio
-      server.js         -> rotas da API REST
-    package.json
-  frontend/
-    index.html, cadastro.html, home.html,
-    unidades.html, agendamento.html, historico.html
-    css/style.css
-    js/api.js
+
+---
+
+## Usuário de demonstração
+
+Para facilitar a avaliação do MVP, existe um usuário de teste previamente cadastrado:
+
+| Campo | Valor |
+| --- | --- |
+| E-mail | `maria@email.com` |
+| Senha | `123456` |
+
+---
+
+## Estrutura do projeto
+
+```text
+PTI-saude-facil/
+│
+├── backend/
+│   ├── src/
+│   │   ├── database.js
+│   │   ├── repositories.js
+│   │   ├── services.js
+│   │   └── server.js
+│   ├── package.json
+│   └── package-lock.json
+│
+├── frontend/
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   └── api.js
+│   ├── index.html
+│   ├── cadastro.html
+│   ├── home.html
+│   ├── unidades.html
+│   ├── agendamento.html
+│   └── historico.html
+│
+├── .gitignore
+└── README.md
 ```
+
+### Organização do back-end
+
+- `database.js`: criação das tabelas e dados iniciais do banco;
+- `repositories.js`: consultas e operações de acesso aos dados;
+- `services.js`: regras de negócio da aplicação;
+- `server.js`: configuração do servidor e rotas da API REST.
+
+---
 
 ## Regras de negócio implementadas
 
-- Login exige e-mail e senha cadastrados (senha verificada via hash).
-- E-mail e CPF não podem se repetir no cadastro.
-- Não é possível agendar uma especialidade que a unidade não oferece.
-- Não é possível agendar em data ou horário que já tenha passado.
-- Não é possível agendar em um horário já reservado para a mesma especialidade na mesma unidade.
-- Não é possível cancelar uma consulta que já está cancelada.
+- O login exige e-mail e senha cadastrados;
+- As senhas são armazenadas utilizando hash;
+- E-mail e CPF não podem ser cadastrados mais de uma vez;
+- Não é possível selecionar uma especialidade não oferecida pela unidade escolhida;
+- Não é possível agendar consultas em datas ou horários que já tenham passado;
+- Não é possível realizar dois agendamentos para a mesma unidade, especialidade, data e horário;
+- Não é possível cancelar uma consulta já cancelada;
 - Não é possível cancelar uma consulta após a data e o horário do atendimento.
 
-## Limitações conhecidas desta versão (MVP)
+### Regra de conflito de horários
 
-Por ser um MVP de escopo reduzido, as seguintes simplificações foram
-feitas conscientemente e ficam como evolução futura:
+Um horário é considerado ocupado quando já existe um agendamento com a mesma combinação de:
 
-- **Autorização por usuário no servidor:** a sessão é mantida apenas no
-  navegador (`sessionStorage`). O servidor confia no `usuarioId` enviado
-  pelo front-end e **não verifica** se o registro pedido/alterado pertence
-  de fato ao usuário autenticado (ex.: `GET /api/agendamentos/usuario/:id`,
-  `PUT /api/agendamentos/:id/cancelar`). Login e cadastro funcionam
-  normalmente; o que falta é um mecanismo de token/sessão no servidor que
-  identifique o usuário a cada requisição, em vez de confiar no valor
-  enviado pelo cliente. Fica como próximo passo do projeto.
-- Os horários disponíveis por unidade/especialidade ainda são fixos,
-  em vez de vir de uma agenda real cadastrada no banco.
-- A lista de especialidades de cada unidade é um campo de texto simples,
-  em vez de uma tabela associativa separada.
+**unidade + especialidade + data + horário**
 
-## Regra de conflito de horário (decisão consciente)
+Especialidades diferentes podem possuir atendimentos no mesmo horário dentro de uma mesma unidade.
 
-Um horário só é considerado ocupado se já existir um agendamento com a
-**mesma unidade + mesma especialidade + mesma data + mesmo horário**.
-Especialidades diferentes na mesma unidade podem ter o mesmo horário
-ocupado ao mesmo tempo (cada uma representa, na prática, um profissional
-diferente).
+---
+
+## Limitações conhecidas do MVP
+
+O Saúde Fácil foi desenvolvido com **escopo acadêmico** e utiliza dados fictícios para demonstração.
+
+Nesta versão:
+
+- A sessão do usuário é mantida no navegador por meio de `sessionStorage`. A autorização individual das requisições ainda não utiliza token ou sessão validada pelo servidor;
+- Os horários disponíveis são previamente definidos e ainda não são obtidos de uma agenda dinâmica armazenada no banco;
+- As especialidades oferecidas por cada unidade são armazenadas de forma simplificada, sem uma tabela associativa própria.
+
+Esses pontos permanecem como possibilidades de evolução para versões futuras.
+
+---
+
+## Escopo funcional
+
+O MVP implementado concentra-se principalmente na jornada da persona **Maria Aparecida**, representando o cidadão que utiliza o Saúde Fácil para localizar unidades e realizar seus próprios agendamentos.
+
+Os fluxos relacionados a familiares, dependentes e profissionais das unidades também foram considerados nas personas e nos protótipos do projeto, permanecendo como possibilidades de evolução da solução.
+
+---
+
+## Projeto Integrador
+
+Projeto desenvolvido para a disciplina **Projeto Integrador: Análise de Soluções Integradas para Organizações**, do curso de Tecnologia em Análise e Desenvolvimento de Sistemas — Centro Universitário Senac.
+
+**Professor orientador:** Anderson Clayton Garcia Lopes  
+**Ano:** 2026
+
+### Integrantes
+
+- Leonardo Amaral de Souza
+- Ingrid Franco de Oliveira
+- Vinicius Gabriel Varone
+- Victor Mendes Ferreira Mello
+- Gabriel Strolego Queiroz
+- Mauricio Zarpelon Antunes dos Santos
