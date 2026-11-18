@@ -43,9 +43,11 @@ A interface foi desenvolvida seguindo uma abordagem **mobile first**, com foco e
 
 ### Pré-requisito
 
-É necessário possuir **Node.js 22 ou superior** instalado.
+É necessário possuir **Node.js 22 LTS ou superior** instalado.
 
-O pacote `better-sqlite3` utilizado no projeto requer Node.js 22 ou versão superior para utilização do binário pré-compilado.
+O projeto utiliza o pacote `better-sqlite3`. Em alguns ambientes Windows, o processo padrão de instalação pode tentar compilar o pacote localmente por meio do `node-gyp`, exigindo ferramentas adicionais de desenvolvimento.
+
+Para evitar essa compilação desnecessária no ambiente de demonstração, recomenda-se utilizar o comando `npm ci --ignore-scripts`, que instala exatamente as versões registradas no arquivo `package-lock.json` sem executar scripts adicionais de instalação.
 
 ### 1. Acesse a pasta do back-end
 
@@ -56,7 +58,7 @@ cd backend
 ### 2. Instale as dependências
 
 ```bash
-npm install
+npm ci --ignore-scripts
 ```
 
 ### 3. Inicie a aplicação
