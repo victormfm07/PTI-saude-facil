@@ -1,4 +1,3 @@
-// Módulo central de comunicação com a API REST do back-end.
 const BASE_URL = '/api';
 
 const Api = {
@@ -55,8 +54,6 @@ function sair() {
   window.location.href = 'index.html';
 }
 
-// Data local (não usar toISOString(), que é UTC e pode "adiantar" o dia
-// à noite no horário de Brasília).
 function hojeLocalISO() {
   const d = new Date();
   const ano = d.getFullYear();
@@ -65,17 +62,14 @@ function hojeLocalISO() {
   return `${ano}-${mes}-${dia}`;
 }
 
-// Converte "2026-11-23" para "23/11/2026", para exibição amigável.
 function formatarDataBR(dataISO) {
   if (!dataISO) return '';
   const [ano, mes, dia] = dataISO.split('-');
   return `${dia}/${mes}/${ano}`;
 }
 
-// Mesma lista de horários aceitos pelo back-end (services.js).
 const HORARIOS_VALIDOS = ['08:00', '09:30', '11:00', '14:00', '16:00'];
 
-// Se a data escolhida for hoje, remove da lista os horários que já passaram.
 function horariosDisponiveisPara(dataISO) {
   if (!dataISO || dataISO !== hojeLocalISO()) return HORARIOS_VALIDOS;
   const agora = new Date();
