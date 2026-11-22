@@ -117,7 +117,7 @@ const AgendamentoService = {
       throw new ErroNegocio('Horário inválido.');
     }
 
-     if (jaPassou(data, horario)) {
+    if (jaPassou(data, horario)) {
       throw new ErroNegocio('Não é possível agendar em uma data/horário que já passou.');
     }
 
