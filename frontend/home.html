@@ -44,7 +44,6 @@ document.getElementById('nome-usuario').textContent = usuario.nome.split(' ')[0]
     const horaAgora = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
     const agendamentos = (await Api.listarAgendamentos(usuario.id))
       .filter(a => a.status === 'AGENDADO')
-      // mantém apenas consultas ainda não ocorridas: data futura, ou hoje com horário ainda não passado
       .filter(a => a.data_consulta > hoje || (a.data_consulta === hoje && a.horario_consulta >= horaAgora))
       .sort((a, b) => (a.data_consulta + a.horario_consulta).localeCompare(b.data_consulta + b.horario_consulta));
     if (!agendamentos.length) {
