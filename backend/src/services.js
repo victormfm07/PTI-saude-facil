@@ -1,4 +1,3 @@
-// Camada de serviço: regras de negócio da aplicação.
 const bcrypt = require('bcryptjs');
 const { UsuarioRepository, UnidadeRepository, AgendamentoRepository } = require('./repositories');
 
@@ -11,9 +10,6 @@ class ErroNegocio extends Error {
   }
 }
 
-// Data/hora local (America/Sao_Paulo no ambiente de produção), não UTC.
-// Evita o bug de usar toISOString(), que pode "adiantar" o dia à noite
-// no horário de Brasília.
 function dataLocalISO(date = new Date()) {
   const ano = date.getFullYear();
   const mes = String(date.getMonth() + 1).padStart(2, '0');
@@ -33,7 +29,6 @@ function dataValida(data) {
   return !Number.isNaN(d.getTime()) && dataLocalISO(d) === data;
 }
 
-// Verdadeiro se (data, horario) já ficou no passado em relação a agora.
 function jaPassou(data, horario) {
   const agora = new Date();
   const hoje = dataLocalISO(agora);
@@ -122,16 +117,10 @@ const AgendamentoService = {
       throw new ErroNegocio('Horário inválido.');
     }
 
-    // Compara data + horário (não só a data) com o momento atual, para não
-    // permitir marcar um horário de hoje que já passou.
-    if (jaPassou(data, horario)) {
+     if (jaPassou(data, horario)) {
       throw new ErroNegocio('Não é possível agendar em uma data/horário que já passou.');
     }
 
-    // Conflito = mesma unidade + mesma especialidade + mesma data + mesmo
-    // horário. Especialidades diferentes podem ter profissionais diferentes
-    // atendendo ao mesmo tempo, por isso a especialidade entra na checagem
-    // (regra escolhida conscientemente para este MVP).
     const conflito = AgendamentoRepository.buscarConflito(unidadeId, especialidade, data, horario);
     if (conflito) {
       throw new ErroNegocio(
