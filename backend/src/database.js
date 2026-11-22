@@ -1,6 +1,3 @@
-// Camada de acesso ao banco de dados (SQLite para o ambiente de demonstração do MVP).
-// Em produção a equipe pode trocar para PostgreSQL/MySQL sem alterar as camadas
-// de service/controller, pois o acesso fica isolado aqui.
 const path = require('path');
 const Database = require('better-sqlite3');
 const bcrypt = require('bcryptjs');
@@ -48,8 +45,6 @@ function init() {
   seedUnidades();
 }
 
-// Seeds separados (usuários e unidades), para que a ausência de um
-// não impeça a criação do outro.
 function seedUsuarios() {
   const count = db.prepare('SELECT COUNT(*) AS total FROM usuarios').get().total;
   if (count > 0) return;
