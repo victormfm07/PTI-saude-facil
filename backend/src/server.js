@@ -1,4 +1,3 @@
-// Camada de controller + inicialização do servidor (API REST).
 const express = require('express');
 const path = require('path');
 const { init } = require('./database');
@@ -7,11 +6,8 @@ const { UsuarioService, UnidadeService, AgendamentoService, ErroNegocio } = requ
 init();
 
 const app = express();
-// Não é necessário CORS: o próprio Express já serve o front-end e a API
-// no mesmo servidor/porta (mesma origem).
 app.use(express.json());
 
-// Serve o front-end estático (para rodar tudo com um único comando no ambiente de demonstração).
 app.use(express.static(path.join(__dirname, '..', '..', 'frontend')));
 
 function handle(res, fn) {
