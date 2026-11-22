@@ -1,4 +1,3 @@
-// Camada de repositório: consultas SQL isoladas, sem regra de negócio.
 const { db } = require('./database');
 
 const UsuarioRepository = {
